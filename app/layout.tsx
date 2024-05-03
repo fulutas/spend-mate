@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import RootProviders from "@/components/providers/RootProviders";
 import { cookies } from "next/headers";
 import { useTheme } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
 
-return (
+  return (
     <ClerkProvider>
       <html suppressHydrationWarning lang="en" className={"dark"} style={{ colorScheme: "dark" }}>
         <body className={inter.className}>
+          <Toaster richColors position="top-right" />
           <RootProviders>{children}</RootProviders>
         </body>
       </html>
