@@ -1,4 +1,7 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## SpendMate & Money Manager / Expense Tracker 
+Manage all your money with ease from one place with SpendMate. Track your income and expenses, analyze your financial habits and stick to your budgets.
+
+### iOS/Android Mobile App Coming Soon!
 
 ## Getting Started
 

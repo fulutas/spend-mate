@@ -18,13 +18,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CreateCategory } from '../_actions/categories'
 import { Category } from '@prisma/client'
 import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
 
 
 interface Props {
-  type: TransactionType
+  type: TransactionType,
+  successCallback: (category: Category) => void;
 }
 
-function CreateCategoryDialog({ type }: Props) {
+function CreateCategoryDialog({ type, successCallback }: Props) {
   const [open, setOpen] = useState(false)
 
   const form = useForm<CreateCategorySchemaType>({
@@ -35,6 +37,7 @@ function CreateCategoryDialog({ type }: Props) {
   })
 
   const queryClient = useQueryClient()
+  const theme = useTheme()
 
   const { mutate, isPending } = useMutation({
     mutationFn: CreateCategory,
@@ -48,6 +51,8 @@ function CreateCategoryDialog({ type }: Props) {
       toast.success(`Category ${data.name} created successfully.`, {
         id: "create-category"
       })
+
+      successCallback(data)
 
       await queryClient.invalidateQueries({
         queryKey: ["categories"]
@@ -106,10 +111,10 @@ function CreateCategoryDialog({ type }: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input defaultValue={""} {...field} />
+                    <Input placeholder='Category' {...field} />
                   </FormControl>
                   <FormDescription>
-                    Transaction description (optional)
+                    This is how your category will apper in the app.
                   </FormDescription>
                 </FormItem>
               )}
@@ -148,6 +153,7 @@ function CreateCategoryDialog({ type }: Props) {
                       <PopoverContent className='w-full'>
                         <Picker
                           data={data}
+                          theme={theme.resolvedTheme}
                           onEmojiSelect={(emoji: { native: string }) => {
                             field.onChange(emoji.native)
                           }}

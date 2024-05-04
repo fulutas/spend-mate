@@ -6,18 +6,24 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { TransactionType } from '@/lib/types'
 import { Category } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CreateCategoryDialog from './CreateCategoryDialog'
-import { Check } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Props {
-  type: TransactionType
+  type: TransactionType;
+  onChange: (value: string) => void;
 }
 
-function CategoryPicker({ type }: Props) {
+function CategoryPicker({ type, onChange }: Props) {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
+
+  useEffect(() => {
+    if (!value) return
+    onChange(value)
+  }, [onChange, value])
 
   const categoriesQuery = useQuery({
     queryKey: ["categories", type],
@@ -26,11 +32,21 @@ function CategoryPicker({ type }: Props) {
 
   const selectedCategory = categoriesQuery.data?.find((category: Category) => category.name === value)
 
+  const successCallback = useCallback((category: Category) => {
+    setValue(category.name)
+    setOpen((prev) => !prev)
+  }, [setValue, setOpen])
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant={"outline"} role="combobox" aria-expanded={open} className='w-[200px] justify-between'>
-          {selectedCategory ? <CategoryRow category={selectedCategory} /> : "Select Category"}
+          {selectedCategory ? (
+            <CategoryRow category={selectedCategory} />
+          ) : (
+            "Select Category"
+          )}
+          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0'>
@@ -38,7 +54,7 @@ function CategoryPicker({ type }: Props) {
           e.preventDefault()
         }}>
           <CommandInput placeholder='Search category...' />
-          <CreateCategoryDialog type={type} />
+          <CreateCategoryDialog type={type} successCallback={successCallback} />
           <CommandEmpty>
             <p>Category not found.</p>
             <p className='text-xs mt-3 text-muted-foreground'>
