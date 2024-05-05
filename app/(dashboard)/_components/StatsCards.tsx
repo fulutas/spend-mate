@@ -23,9 +23,6 @@ function StatsCards({ from, to, userSettings }: Props) {
     queryFn: () => fetch(`/api/stats/balance?from=${DateToUTCDate(from)}&to=${DateToUTCDate(to)}`).then((res) => res.json())
   })
 
-  console.log(DateToUTCDate(from))
-  console.log(DateToUTCDate(to))
-
   const formatter = useMemo(() => {
     return GetFormatterForCurrency(userSettings.currency)
   }, [userSettings.currency])
@@ -34,8 +31,6 @@ function StatsCards({ from, to, userSettings }: Props) {
   const expense = statsQuery.data?.expense || 0
 
   const balance = income - expense
-
-  console.log(statsQuery.dataUpdatedAt)
 
   return (
     <>
@@ -73,7 +68,11 @@ function StatsCards({ from, to, userSettings }: Props) {
           />
         </SkeletonWrapper>
       </div>
-      <p className='text-muted-foreground text-sm'>Last Update {format(statsQuery?.dataUpdatedAt, "MMMM dd, yyyy HH:MM")} </p>
+      {statsQuery?.dataUpdatedAt > 0 && (
+        <p className='text-muted-foreground text-sm'>
+          Last Update {format(statsQuery?.dataUpdatedAt, "MMMM dd, yyyy HH:mm")}
+        </p>
+      )}
     </>
   )
 }
@@ -88,7 +87,7 @@ function StatCard({ formatter, value, title, icon }: { formatter: Intl.NumberFor
   return (
     <Card className='flex h-24 w-full items-center gap-2 p-4'>
       {icon}
-      <div className='flex flex-col items-center gap-0'>
+      <div className='flex flex-col items-start gap-0'>
         <p className='text-muted-foreground'>{title}</p>
         <CountUp
           preserveValue
